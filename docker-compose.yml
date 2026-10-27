@@ -1,17 +1,16 @@
-version: '3.8'
-
 services:
   postgres:
     image: pgvector/pgvector:pg16
-    container_name: aegis_postgres
+    container_name: aegis_ai_postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
-      POSTGRES_DB: aegis_ai
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aegis_local_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-aegis_ai}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
 
 volumes:
-  postgres_data:
+  pgdata:
