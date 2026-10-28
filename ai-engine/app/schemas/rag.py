@@ -16,9 +16,9 @@ class RAGQueryRequest(BaseModel):
 
 
 class EvaluationScores(BaseModel):
-    context_relevance: float = Field(ge=0, le=1)
-    faithfulness: float = Field(ge=0, le=1)
-    answer_relevance: float = Field(ge=0, le=1)
+    context_relevance: float | None = Field(default=None, ge=0, le=1)
+    faithfulness: float | None = Field(default=None, ge=0, le=1)
+    answer_relevance: float | None = Field(default=None, ge=0, le=1)
 
 
 class Citation(BaseModel):
