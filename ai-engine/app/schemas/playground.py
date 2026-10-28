@@ -1,12 +1,13 @@
 """Request and response contracts for the interactive LLM playground."""
 
 from pydantic import BaseModel, ConfigDict, Field
+from uuid import UUID
 
 
 class PromptRequest(BaseModel):
-    """A prompt to run against a locally available Ollama chat model."""
+    """A direct LLM prompt, or a project-scoped RAG prompt when project_id is set."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     prompt: str = Field(
         ..., min_length=1,
@@ -18,6 +19,12 @@ class PromptRequest(BaseModel):
         description="The Ollama model name to use. The model must already be available to Ollama.",
         examples=["llama3.2"],
     )
+    project_id: UUID | None = Field(
+        default=None,
+        alias="projectId",
+        description="When supplied, retrieve document chunks for this project before answering.",
+    )
+    top_k: int = Field(default=5, alias="topK", ge=1, le=50)
 
 
 class PromptResponse(BaseModel):

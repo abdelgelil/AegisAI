@@ -9,5 +9,8 @@ class Settings(BaseSettings):
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     LLM_MODEL_NAME: str = "llama3.2"
     EMBEDDING_MODEL_NAME: str = "nomic-embed-text"
+    RAG_FAITHFULNESS_THRESHOLD: float = 0.70
+    RAG_EVALUATION_TIMEOUT_SECONDS: float = 30.0
+    RAG_STRICT_EVALUATION: bool = False
 
 settings = Settings()

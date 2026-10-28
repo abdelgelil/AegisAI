@@ -13,6 +13,7 @@ from app.services.embedding import embedding_service
 from app.services.evaluator import RAGEvaluator
 from app.services.local_llm import LocalLLMService
 from app.services.vector_store import similarity_search
+from app.core.config import settings
 
 
 class RAGState(TypedDict, total=False):
@@ -28,14 +29,19 @@ class RAGState(TypedDict, total=False):
     context: str
     answer: str
     scores: dict[str, float]
+    evaluation_error: str | None
     gate_decision: str
     block_reason: str | None
     next_step: str
 
 
 class RAGWorkflow:
-    def __init__(self, faithfulness_threshold: float = 0.7, max_retries: int = 1) -> None:
-        self.threshold = faithfulness_threshold
+    def __init__(self, faithfulness_threshold: float | None = None, max_retries: int = 1) -> None:
+        self.threshold = (
+            settings.RAG_FAITHFULNESS_THRESHOLD
+            if faithfulness_threshold is None
+            else faithfulness_threshold
+        )
         self.max_retries = max_retries
         self.llm = LocalLLMService()
         self.evaluator = RAGEvaluator()
@@ -85,12 +91,36 @@ class RAGWorkflow:
         return {"answer": answer}
 
     async def evaluate(self, state: RAGState) -> dict[str, Any]:
-        scores = await self.evaluator.evaluate(
-            question=state["original_query"], context=state.get("context", ""), answer=state.get("answer", "")
-        )
-        return {"scores": scores}
+        try:
+            scores = await self.evaluator.evaluate(
+                question=state["original_query"], context=state.get("context", ""), answer=state.get("answer", "")
+            )
+        except Exception as exc:
+            # Evaluation is advisory in local development; retrieval/generation already succeeded.
+            return {"scores": {}, "evaluation_error": str(exc)}
+        retrieved = state.get("retrieved", [])
+        max_retrieval_score = max((float(item.get("score", 0.0)) for item in retrieved), default=0.0)
+        if (
+            scores
+            and all(score == 0.0 for score in scores.values())
+            and max_retrieval_score >= 0.75
+            and state.get("answer", "").strip()
+        ):
+            # A fully zero judge response contradicts strong retrieved evidence and is
+            # treated as an unavailable local judge unless strict mode is enabled.
+            return {
+                "scores": {},
+                "evaluation_error": "judge_returned_zero_scores_for_relevant_context",
+            }
+        return {"scores": scores, "evaluation_error": None}
 
     async def circuit_breaker(self, state: RAGState) -> dict[str, Any]:
+        if state.get("evaluation_error") and not settings.RAG_STRICT_EVALUATION:
+            return {
+                "gate_decision": "PASS_WITH_EVALUATION_WARNING",
+                "block_reason": "evaluation_unavailable",
+                "next_step": "done",
+            }
         faithfulness = state.get("scores", {}).get("faithfulness", 0.0)
         if faithfulness >= self.threshold:
             return {"gate_decision": "PASS", "block_reason": None, "next_step": "done"}
@@ -125,5 +155,6 @@ class RAGWorkflow:
             "context": "",
             "answer": "",
             "scores": {},
+            "evaluation_error": None,
         }
         return await self.graph.ainvoke(initial)

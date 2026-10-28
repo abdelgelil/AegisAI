@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AegisAI - Local RAG Playground</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked.js for rendering markdown text nicely -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-6 font-sans">
+    <div class="max-w-4xl mx-auto space-y-8">
+        <!-- Header -->
+        <header class="border-b border-slate-800 pb-4">
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+                AegisAI Engine Playground
+            </h1>
+            <p class="text-sm text-slate-400">Upload documents and test your local RAG pipeline instantly.</p>
+        </header>
+
+        <!-- Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Upload Section -->
+            <div class="bg-slate-900/50 backdrop-blur border border-slate-800 p-6 rounded-xl space-y-4 shadow-xl">
+                <h2 class="text-lg font-semibold text-blue-400">1. Upload Document</h2>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">Select PDF/TXT File</label>
+                    <input type="file" id="fileInput" class="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">Project ID (UUID)</label>
+                    <input type="text" id="projectId" value="3fa85f64-5717-4562-b3fc-2c963f66afa6" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+                </div>
+                <button onclick="uploadDocument()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition">Upload & Embed</button>
+                <p id="uploadStatus" class="text-xs text-slate-400"></p>
+            </div>
+
+            <!-- Query Section -->
+            <div class="bg-slate-900/50 backdrop-blur border border-slate-800 p-6 rounded-xl space-y-4 shadow-xl">
+                <h2 class="text-lg font-semibold text-indigo-400">2. Ask the LLM</h2>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">Your Question</label>
+                    <textarea id="queryInput" rows="3" placeholder="What should Ziad do?" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"></textarea>
+                </div>
+                <button onclick="sendQuery()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg transition">Ask RAG Engine</button>
+            </div>
+
+        </div>
+
+        <!-- Response Output -->
+        <div class="bg-slate-900/50 backdrop-blur border border-slate-800 p-6 rounded-xl space-y-4 shadow-xl">
+            <h2 class="text-lg font-semibold text-emerald-400">3. Output & Citations</h2>
+            <div id="outputBox" class="bg-slate-950 border border-slate-800 rounded-lg p-4 text-sm text-slate-300 min-h-[120px]">
+                Awaiting query execution...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+
+        async function uploadDocument() {
+            const fileInput = document.getElementById('fileInput');
+            const projectId = document.getElementById('projectId').value;
+            const status = document.getElementById('uploadStatus');
+
+            if (!fileInput.files[0]) {
+                status.innerText = 'Please select a file first.';
+                status.className = 'text-xs text-rose-400';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('project_id', projectId);
+
+            status.innerText = 'Uploading and processing chunks...';
+            status.className = 'text-xs text-amber-400';
+
+            try {
+                const res = await fetch(`${API_URL}/api/v1/documents/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    status.innerText = 'Success! Document uploaded and embedded.';
+                    status.className = 'text-xs text-emerald-400';
+                } else {
+                    status.innerText = 'Error: ' + JSON.stringify(data);
+                    status.className = 'text-xs text-rose-400';
+                }
+            } catch (err) {
+                status.innerText = 'Failed to connect to backend.';
+                status.className = 'text-xs text-rose-400';
+            }
+        }
+
+        async function sendQuery() {
+            const query = document.getElementById('queryInput').value;
+            const projectId = document.getElementById('projectId').value;
+            const outputBox = document.getElementById('outputBox');
+
+            if (!query) {
+                outputBox.innerHTML = '<span class="text-rose-400">Please enter a question.</span>';
+                return;
+            }
+
+            outputBox.innerHTML = '<span class="text-amber-400 animate-pulse">Querying vector store and generating response...</span>';
+
+            try {
+                const res = await fetch(`${API_URL}/api/v1/rag/query`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ projectId: projectId, query: query })
+                });
+                
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Extract the answer or fallback response text
+                    const textAnswer = data.answer || data.response || "No answer generated.";
+
+                    // Parse markdown into clean HTML text
+                    outputBox.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="text-slate-200 leading-relaxed">
+                                ${marked.parse(textAnswer)}
+                            </div>
+                            ${data.gateDecision ? `
+                                <div class="pt-3 border-t border-slate-800 text-xs text-slate-400 flex gap-4">
+                                    <span>Gate: <strong class="${data.gateDecision === 'PASS' ? 'text-emerald-400' : 'text-rose-400'}">${data.gateDecision}</strong></span>
+                                    <span>Latency: ${(data.latencyMs / 1000).toFixed(2)}s</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    outputBox.innerHTML = `<span class="text-rose-400">Error (${res.status}): ${data.detail || JSON.stringify(data)}</span>`;
+                }
+            } catch (err) {
+                outputBox.innerHTML = '<span class="text-rose-400">Error: Failed to fetch query response from FastAPI engine.</span>';
+            }
+        }
+    </script>
+</body>
+</html>
