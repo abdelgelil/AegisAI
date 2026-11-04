@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+/*
+  "Sand & Teal": warm cream surfaces, deep teal brand, and a green / amber / red
+  status triplet that is shared with the sentence heatmap.
+  All text colors pass WCAG AA (4.5:1) on canvas, surface and raised.
+*/
+@theme {
+  --color-canvas: #faf6ef;
+  --color-surface: #ffffff;
+  --color-raised: #f3ece0;
+
+  --color-line: #e5dccb;
+  --color-line-strong: #cfc3ac;
+
+  --color-ink: #201a14;
+  --color-ink-muted: #5a4f42;
+  --color-ink-faint: #756859;
+
+  --color-brand: #0f766e;
+  --color-brand-strong: #115e59;
+
+  --color-success: #166534;
+  --color-warning: #92400e;
+  --color-danger: #b91c1c;
+  --color-info: #0f766e;
+}
+
+/*
+  Dark alternative ("Espresso & Teal"): replace the @theme block above with this one.
+
+  @theme {
+    --color-canvas: #15110d;
+    --color-surface: #1d1812;
+    --color-raised: #28211a;
+    --color-line: #372f25;
+    --color-line-strong: #4b4132;
+    --color-ink: #f4eee4;
+    --color-ink-muted: #bfb3a1;
+    --color-ink-faint: #9a8e7c;
+    --color-brand: #2dd4bf;
+    --color-brand-strong: #14b8a6;
+    --color-success: #4ade80;
+    --color-warning: #fbbf24;
+    --color-danger: #f87171;
+    --color-info: #2dd4bf;
+  }
+*/
+
+@layer base {
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+}
