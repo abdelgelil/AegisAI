@@ -2,12 +2,18 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
-from app.api.v1.endpoints import rag, documents, llm_playground
+from app.api.v1.router import router as api_v1_router
+from app.core.config import settings
 from app.core.database import engine, Base
-from app.models.chunk import ChunkModel  # Register vector table in Base.metadata.
+from app.models.audit import AuditLog  # Register audit table in Base.metadata.
+from app.models.chunk import DocumentChunk  # Register vector table in Base.metadata.
+from app.models import document as _document_models  # Register legacy document tables.
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    from redis.asyncio import Redis
+
+    app.state.redis = Redis.from_url(settings.REDIS_URL, decode_responses=True)
     # Startup: Connect to PostgreSQL and verify pgvector extension
     print("Application starting up... Connecting to PostgreSQL & pgvector...")
     try:
@@ -27,7 +33,10 @@ async def lifespan(app: FastAPI):
     
     # Shutdown: Dispose database engine
     print("Application shutting down...")
-    await engine.dispose()
+    try:
+        await app.state.redis.aclose()
+    finally:
+        await engine.dispose()
 
 app = FastAPI(
     title="AegisAI Core Engine",
@@ -38,15 +47,34 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*", "X-Provider-Api-Key"],
 )
 
 @app.get("/health", tags=["Health Check"])
 async def health_check():
     return {"status": "healthy", "service": "AegisAI Engine"}
+
+
+@app.get("/healthz", tags=["Health Check"])
+async def healthz():
+    """Check live database, pgvector extension, and Redis availability."""
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+            vector_result = await conn.execute(
+                text("SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'vector')")
+            )
+            vector_active = bool(vector_result.scalar())
+        await app.state.redis.ping()
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail="AegisAI dependencies are unavailable") from exc
+
+    if not vector_active:
+        raise HTTPException(status_code=503, detail="Required pgvector extension is unavailable")
+    return {"status": "healthy", "database": "healthy", "pgvector": "healthy", "redis": "healthy"}
 
 @app.get("/api/v1/db-check", tags=["Health Check"])
 async def db_check():
@@ -70,7 +98,5 @@ async def db_check():
             detail=f"Database connection failed: {str(e)}"
         )
 
-# Register your routers
-app.include_router(rag.router, prefix="/api/v1/rag", tags=["RAG Services"])
-app.include_router(documents.router, prefix="/api/v1/documents", tags=["Document Management"])
-app.include_router(llm_playground.router, prefix="/api/v1", tags=["LLM Playground"])
+# Register the versioned API as one aggregate, preserving existing endpoints.
+app.include_router(api_v1_router, prefix="/api/v1")

@@ -1,16 +1,21 @@
 services:
-  postgres:
-    image: pgvector/pgvector:pg16
-    container_name: aegis_ai_postgres
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aegis_local_dev_password}
-      POSTGRES_DB: ${POSTGRES_DB:-aegis_ai}
+  redis:
+    image: redis:7-alpine
+    container_name: aegis_ai_redis
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+      - "${REDIS_PORT:-6379}:6379"
     restart: unless-stopped
 
-volumes:
-  pgdata:
+  ai-engine:
+    build:
+      context: ./ai-engine
+    container_name: aegis_ai_engine
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "${AI_ENGINE_PORT:-8000}:8000"
+    depends_on:
+      - redis
+    restart: unless-stopped
