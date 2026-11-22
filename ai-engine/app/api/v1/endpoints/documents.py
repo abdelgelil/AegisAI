@@ -1,5 +1,7 @@
 """Document upload and persistent vector ingestion endpoints."""
+import logging
 
+logger = logging.getLogger(__name__)
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
@@ -38,6 +40,7 @@ async def upload_document(
     except (UnicodeDecodeError, ValueError) as exc:
         raise HTTPException(status_code=422, detail=f"Could not parse document: {exc}") from exc
     except Exception as exc:
+        logger.error(f"Unexpected error occurred: {exc}")
         raise HTTPException(status_code=503, detail="Document ingestion service is unavailable") from exc
     finally:
         await file.close()

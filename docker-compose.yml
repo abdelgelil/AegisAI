@@ -1,21 +1,45 @@
+# Dev stack: ai-engine (FastAPI) + Redis. Database = Neon (cloud), Ollama = on the host.
 services:
   redis:
     image: redis:7-alpine
     container_name: aegis_ai_redis
+    # Cache only: no persistence, capped memory, evicts least-recently-used keys.
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru", "--save", "", "--appendonly", "no"]
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"   # host-only; containers use redis:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     restart: unless-stopped
 
   ai-engine:
     build:
       context: ./ai-engine
+      dockerfile: Dockerfile
     container_name: aegis_ai_engine
     env_file:
-      - .env
+      - .env                      # DATABASE_URL, model names, etc.
     environment:
-      REDIS_URL: redis://redis:6379
+      # Override: inside the container "localhost" is the container itself.
+      REDIS_URL: redis://redis:6379/0
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
-      - "${AI_ENGINE_PORT:-8000}:8000"
+      - "8000:8000"
+    volumes:
+      - ./ai-engine:/app          # dev only: live code reload
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/app/app"]
+    healthcheck:
+      # Liveness only. Do NOT use /healthz: a sleeping Neon DB would mark the container unhealthy.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     restart: unless-stopped

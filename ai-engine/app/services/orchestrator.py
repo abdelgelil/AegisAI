@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import re
 import time
-from typing import Protocol, Sequence
+from typing import Protocol
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -23,6 +23,8 @@ from app.schemas.gateway import (
     RetrievedChunk,
 )
 from app.schemas.guardrail import SecurityVerdict, ThreatCategory
+from app.services.embedding import embedding_service
+from app.services.vector_store import similarity_search
 
 
 class SecurityScanner(Protocol):
@@ -135,19 +137,28 @@ class LocalLLMFallback:
 security_scanner: SecurityScanner = DefaultSecurityScanner()
 llm_router: LLMRouter = LocalLLMFallback()
 
+NO_CONTEXT_ANSWER = "I could not find relevant source material to answer this question."
+
 
 async def retrieve_chunks(
-    db: AsyncSession, project_id: UUID | None, top_k: int
-) -> Sequence[ChunkModel]:
-    """Load a bounded set of project chunks; callers quarantine poisoned rows."""
+    db: AsyncSession,
+    project_id: UUID | None,
+    query: str,
+    top_k: int,
+    redis=None,
+) -> list[tuple[ChunkModel, float]]:
+    """Semantic retrieval: embed the query (Redis-cached), then cosine search.
+
+    Returns (chunk, score) pairs, best first, scores in [0, 1]. Over-fetches so that
+    poisoned chunks can be quarantined and still leave top_k clean ones.
+    """
     if project_id is None:
         return []
-    result = await db.execute(
-        select(ChunkModel)
-        .where(ChunkModel.project_id == project_id)
-        .limit(min(max(top_k * 4, top_k), 200))
-    )
-    return result.scalars().all()
+    if redis is not None:
+        vector = await embedding_service.embed_query_cached(query, redis)
+    else:
+        vector = await asyncio.to_thread(embedding_service.embed_text, query)
+    return await similarity_search(db, project_id, vector, min(max(top_k * 4, top_k), 50))
 
 
 class GatewayOrchestrator:
@@ -211,6 +222,7 @@ class GatewayOrchestrator:
         request: RAGQueryRequest,
         db: AsyncSession,
         provider_api_key: str | None = None,
+        redis=None,
     ) -> AegisResponse:
         started = time.perf_counter()
         requested_mode = "byok" if provider_api_key else "local"
@@ -233,16 +245,18 @@ class GatewayOrchestrator:
                 },
             )
 
-        chunks = await retrieve_chunks(db, request.project_id, request.top_k)
-        clean_chunks: list[ChunkModel] = []
-        for chunk in chunks:
+        matches = await retrieve_chunks(db, request.project_id, request.query, request.top_k, redis)
+        # Drop weak matches: irrelevant context makes a small model refuse to answer.
+        matches = [(chunk, score) for chunk, score in matches if score >= settings.RAG_MIN_SCORE]
+        clean_matches: list[tuple[ChunkModel, float]] = []
+        for chunk, score in matches:
             if chunk.is_poisoned:
                 verdict.quarantined_chunk_ids.append(str(chunk.id))
             else:
-                clean_chunks.append(chunk)
+                clean_matches.append((chunk, score))
         if verdict.quarantined_chunk_ids:
             verdict.detected_entities.append(ThreatCategory.POISONED_CHUNK)
-        clean_chunks = clean_chunks[: request.top_k]
+        clean_matches = clean_matches[: request.top_k]
 
         enforced_mode = requested_mode
         if verdict.has_sensitive_credentials and requested_mode == "byok":
@@ -252,19 +266,23 @@ class GatewayOrchestrator:
             verdict.message = "Sensitive credentials detected; request was routed locally."
         verdict.enforced_mode = enforced_mode
 
-        context = "\n\n".join(chunk.text for chunk in clean_chunks)
+        context = "\n\n".join(chunk.text for chunk, _ in clean_matches)
         llm_request = LLMExecuteRequest(
             prompt=request.query,
             provider=request.provider or "ollama",
             model=request.model or settings.LLM_MODEL_NAME,
             mode=requested_mode,
         )
-        generated = await llm_router.execute(
-            llm_request,
-            mode=enforced_mode,
-            context=context,
-            provider_api_key=provider_api_key,
-        )
+        if clean_matches:
+            generated = await llm_router.execute(
+                llm_request,
+                mode=enforced_mode,
+                context=context,
+                provider_api_key=provider_api_key,
+            )
+        else:
+            # Nothing relevant retrieved: do not ask the model (it would guess or refuse).
+            generated = NO_CONTEXT_ANSWER
         latency_ms = (time.perf_counter() - started) * 1000
         await self._write_audit(
             db,
@@ -281,10 +299,10 @@ class GatewayOrchestrator:
                 RetrievedChunk(
                     chunk_id=chunk.id,
                     text=chunk.text,
-                    score=1.0,
-                    source=chunk.document_name,
+                    score=score,
+                    source=chunk.document_name or (chunk.metadata_json or {}).get("source_filename"),
                 )
-                for chunk in clean_chunks
+                for chunk, score in clean_matches
             ],
             latency_ms=latency_ms,
         )

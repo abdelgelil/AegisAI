@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -17,11 +17,17 @@ router = APIRouter()
 @router.post("/query", response_model=AegisRAGResponse)
 async def query_rag(
     payload: RAGQueryRequest,
+    request: Request,
     db: AsyncSession = Depends(get_db),
     provider_api_key: str | None = Header(default=None, alias="X-Provider-Api-Key"),
 ) -> AegisRAGResponse:
     """Run guarded retrieval while preserving fields consumed by legacy clients."""
-    result = await orchestrator.execute_rag_request(payload, db, provider_api_key)
+    result = await orchestrator.execute_rag_request(
+        payload,
+        db,
+        provider_api_key,
+        redis=getattr(request.app.state, "redis", None),
+    )
     citations = [
         {
             "chunk_id": str(chunk.chunk_id),

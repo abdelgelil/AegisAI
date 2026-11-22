@@ -1,0 +1,26 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Virtual environments (yours is inside ai-engine)
+.venv*/
+venv/
+env/
+
+# Python junk
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+
+# Git / editor / OS
+.git
+.gitignore
+.vscode/
+.idea/
+.DS_Store
+
+# Not needed in the image
+logs/
+*.md

@@ -14,27 +14,36 @@ async def lifespan(app: FastAPI):
     from redis.asyncio import Redis
 
     app.state.redis = Redis.from_url(settings.REDIS_URL, decode_responses=True)
+    try:
+        await app.state.redis.ping()
+        print("Redis connection verified.")
+    except Exception as e:
+        print(f"Warning: Redis startup check failed: {e}")
+
     # Startup: Connect to PostgreSQL and verify pgvector extension
     print("Application starting up... Connecting to PostgreSQL & pgvector...")
     try:
         async with engine.begin() as conn:
             # Test basic connection
             await conn.execute(text("SELECT 1"))
-            # Ensure pgvector extension exists
-            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
-            # Bootstrap the initial schema. For managed deployments, replace this
-            # with versioned Alembic migrations before applying schema changes.
-            await conn.run_sync(Base.metadata.create_all)
-        print("Database connection established and pgvector extension verified successfully.")
+            if settings.DB_BOOTSTRAP_ON_STARTUP:
+                # Ensure pgvector extension exists
+                await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
+                # Bootstrap the initial schema. For managed deployments, replace this
+                # with versioned Alembic migrations before applying schema changes.
+                await conn.run_sync(Base.metadata.create_all)
+        print("Database connection established successfully.")
     except Exception as e:
         print(f"Warning: Database startup check failed: {e}")
-    
+
     yield
-    
-    # Shutdown: Dispose database engine
+
+    # Shutdown: Close Redis & dispose database engine
     print("Application shutting down...")
     try:
         await app.state.redis.aclose()
+    except Exception as e:
+        print(f"Error closing Redis connection: {e}")
     finally:
         await engine.dispose()
 
@@ -83,7 +92,7 @@ async def db_check():
         async with engine.connect() as conn:
             version_res = await conn.execute(text("SELECT version();"))
             db_version = version_res.scalar()
-            
+
             ext_res = await conn.execute(text("SELECT extname FROM pg_extension WHERE extname = 'vector';"))
             vector_active = ext_res.scalar() is not None
 
@@ -94,9 +103,8 @@ async def db_check():
             }
     except Exception as e:
         raise HTTPException(
-            status_code=500, 
+            status_code=500,
             detail=f"Database connection failed: {str(e)}"
         )
-
 # Register the versioned API as one aggregate, preserving existing endpoints.
 app.include_router(api_v1_router, prefix="/api/v1")
