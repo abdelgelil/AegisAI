@@ -1,0 +1,7 @@
+
+evaluation/runs/_*
+*.zip
+chroma_db/
+models_cache/
+.env
+.ipynb_checkpoints/

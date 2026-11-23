@@ -1,0 +1,926 @@
+[
+  {
+    "id": "q001",
+    "status": "verified",
+    "domain": "pto",
+    "category": "answerable",
+    "question": "How many PTO days do new employees receive per year?",
+    "ground_truth_answer": "New employees (0-2 years tenure) receive 15 PTO days (120 hours) per year.",
+    "gold_sources": [
+      {
+        "document": "pto-and-leave-policy",
+        "page": 1,
+        "section": "2.1 PTO Accrual Schedule"
+      }
+    ],
+    "gold_evidence_text": "0-2 years15 days (120 hours)5.0 hours",
+    "hallucinated_answer": "New employees receive 20 PTO days (160 hours) per year.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q002",
+    "status": "verified",
+    "domain": "pto",
+    "category": "answerable",
+    "question": "What is the PTO carryover limit?",
+    "ground_truth_answer": "Employees may carry over a maximum of 5 unused PTO days (40 hours) into the following calendar year.",
+    "gold_sources": [
+      {
+        "document": "pto-and-leave-policy",
+        "page": 1,
+        "section": "2.2 PTO Carryover"
+      }
+    ],
+    "gold_evidence_text": "Employees may carry over a maximum of 5 unused PTO days (40 hours) into the following calendar year.",
+    "hallucinated_answer": "Employees can carry over up to 10 unused PTO days, and anything above that is paid out in January.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q003",
+    "status": "verified",
+    "domain": "pto",
+    "category": "answerable",
+    "question": "How much advance notice is required for a PTO request of 5 days?",
+    "ground_truth_answer": "Requests for absences of 4 or more consecutive days require at least 15 business days' advance notice.",
+    "gold_sources": [
+      {
+        "document": "pto-and-leave-policy",
+        "page": 2,
+        "section": "2.3 PTO Request Process"
+      }
+    ],
+    "gold_evidence_text": "Requests for absences of 4 or more consecutive days require at least 15 business days' advance notice.",
+    "hallucinated_answer": "A 5-day request needs at least 5 business days' advance notice.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q004",
+    "status": "verified",
+    "domain": "pto",
+    "category": "answerable",
+    "question": "How many sick days do full-time employees get?",
+    "ground_truth_answer": "Full-time employees receive 10 sick days (80 hours) per calendar year.",
+    "gold_sources": [
+      {
+        "document": "pto-and-leave-policy",
+        "page": 2,
+        "section": "3.1 Sick Leave Allowance"
+      }
+    ],
+    "gold_evidence_text": "All full-time employees receive 10 sick days (80 hours) per calendar year.",
+    "hallucinated_answer": "Full-time employees receive 12 sick days (96 hours) per calendar year, accrued monthly.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q005",
+    "status": "verified",
+    "domain": "pto",
+    "category": "answerable",
+    "question": "How long is the paid parental leave at Acme Corp?",
+    "ground_truth_answer": "Acme Corp provides 12 weeks of paid parental leave at 100% of regular base salary.",
+    "gold_sources": [
+      {
+        "document": "pto-and-leave-policy",
+        "page": 4,
+        "section": "5.1 Paid Parental Leave"
+      }
+    ],
+    "gold_evidence_text": "Acme Corp provides 12 weeks of paid parental leave at 100% of the employee's regular base salary for the birth, adoption, or foster placement of a child.",
+    "hallucinated_answer": "Acme Corp provides 8 weeks of paid parental leave at 60% of base salary.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q006",
+    "status": "verified",
+    "domain": "security",
+    "category": "answerable",
+    "question": "What is the minimum password length required at Acme Corp?",
+    "ground_truth_answer": "All Acme Corp accounts must use passwords with a minimum length of 14 characters.",
+    "gold_sources": [
+      {
+        "document": "information-security-policy",
+        "page": 1,
+        "section": "3.1 Password Policy"
+      }
+    ],
+    "gold_evidence_text": "Minimum length: 14 characters",
+    "hallucinated_answer": "Passwords must be at least 12 characters long.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q007",
+    "status": "verified",
+    "domain": "security",
+    "category": "answerable",
+    "question": "Is SMS-based multi-factor authentication allowed?",
+    "ground_truth_answer": "No, SMS-based MFA is not permitted due to SIM-swap vulnerabilities. Approved methods are hardware security keys and authenticator apps.",
+    "gold_sources": [
+      {
+        "document": "information-security-policy",
+        "page": 2,
+        "section": "3.2 Multi-Factor Authentication (MFA)"
+      }
+    ],
+    "gold_evidence_text": "SMS-based MFA is not permitted due to SIM-swap vulnerabilities.",
+    "hallucinated_answer": "Yes, SMS-based MFA is allowed as a backup when an authenticator app is unavailable.",
+    "hallucination_type": "contradiction"
+  },
+  {
+    "id": "q008",
+    "status": "verified",
+    "domain": "security",
+    "category": "answerable",
+    "question": "How quickly must a lost or stolen device be reported?",
+    "ground_truth_answer": "Lost or stolen devices must be reported immediately to IT Security. IT will initiate a remote wipe within 1 hour of notification.",
+    "gold_sources": [
+      {
+        "document": "information-security-policy",
+        "page": 3,
+        "section": "4.3 Lost or Stolen Devices"
+      }
+    ],
+    "gold_evidence_text": "IT Security will initiate a remote wipe and password reset within 1 hour of notification.",
+    "hallucinated_answer": "Within 24 hours; IT will then remote wipe the device within 3 business days.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q009",
+    "status": "verified",
+    "domain": "security",
+    "category": "answerable",
+    "question": "What encryption standard is required for restricted data?",
+    "ground_truth_answer": "Restricted data must be encrypted at rest using AES-256 encryption and in transit using TLS 1.2 or higher.",
+    "gold_sources": [
+      {
+        "document": "information-security-policy",
+        "page": 5,
+        "section": "8.1 Data Handling"
+      }
+    ],
+    "gold_evidence_text": "Restricted data must be encrypted at rest using AES-256 encryption and in transit using TLS 1.2 or higher.",
+    "hallucinated_answer": "Restricted data must be encrypted with AES-128 at rest and TLS 1.0 in transit.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q010",
+    "status": "verified",
+    "domain": "expenses",
+    "category": "answerable",
+    "question": "What is the per-meal reimbursement limit for dinner during domestic travel?",
+    "ground_truth_answer": "The dinner reimbursement limit during domestic business travel is $50.",
+    "gold_sources": [
+      {
+        "document": "expense-reimbursement-policy",
+        "page": 2,
+        "section": "4.4 Meals During Travel"
+      }
+    ],
+    "gold_evidence_text": "Dinner$50$70",
+    "hallucinated_answer": "The dinner limit during domestic travel is $75.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q011",
+    "status": "verified",
+    "domain": "expenses",
+    "category": "answerable",
+    "question": "What is the maximum hotel rate for domestic travel?",
+    "ground_truth_answer": "Hotel stays should not exceed $200 per night for domestic travel, excluding taxes and fees.",
+    "gold_sources": [
+      {
+        "document": "expense-reimbursement-policy",
+        "page": 2,
+        "section": "4.3 Lodging"
+      }
+    ],
+    "gold_evidence_text": "Hotel stays should not exceed $200 per night for domestic travel and $300 per night for international travel, excluding taxes and fees.",
+    "hallucinated_answer": "Hotel stays should not exceed $250 per night for domestic travel, including taxes and fees.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q012",
+    "status": "verified",
+    "domain": "expenses",
+    "category": "answerable",
+    "question": "How long do I have to submit an expense report?",
+    "ground_truth_answer": "Reimbursement requests must be submitted within 30 calendar days of incurring the expense. Expenses older than 60 days require VP-level approval.",
+    "gold_sources": [
+      {
+        "document": "expense-reimbursement-policy",
+        "page": 1,
+        "section": "2. General Principles"
+      }
+    ],
+    "gold_evidence_text": "Reimbursement requests must be submitted within 30 calendar days of incurring the expense. [...] Expenses older than 60 days will not be reimbursed without VP-level approval.",
+    "hallucinated_answer": "Within 14 days; expenses older than 30 days are never reimbursed.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q013",
+    "status": "verified",
+    "domain": "expenses",
+    "category": "answerable",
+    "question": "What is the annual professional development budget per employee?",
+    "ground_truth_answer": "Each employee receives a $2,000 annual professional development budget.",
+    "gold_sources": [
+      {
+        "document": "expense-reimbursement-policy",
+        "page": 4,
+        "section": "7. Professional Development"
+      },
+      {
+        "document": "benefits-overview",
+        "page": 4,
+        "section": "8.1 Annual Budget"
+      }
+    ],
+    "gold_evidence_text": "Annual budget per employee: $2,000 [...] Each employee receives a $2,000 annual professional development budget",
+    "hallucinated_answer": "Each employee receives a $5,250 annual professional development budget.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q014",
+    "status": "verified",
+    "domain": "remote_work",
+    "category": "answerable",
+    "question": "What are the core hours for remote employees?",
+    "ground_truth_answer": "All employees must be available during core hours: 10:00 AM to 3:00 PM in their designated time zone.",
+    "gold_sources": [
+      {
+        "document": "remote-work-policy",
+        "page": 2,
+        "section": "5.1 Core Hours"
+      }
+    ],
+    "gold_evidence_text": "10:00 AM to 3:00 PM in their designated time zone",
+    "hallucinated_answer": "Core hours are 9:00 AM to 5:00 PM local time.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q015",
+    "status": "verified",
+    "domain": "remote_work",
+    "category": "answerable",
+    "question": "What equipment does Acme Corp provide to remote workers?",
+    "ground_truth_answer": "Acme Corp provides a laptop, external 27-inch monitor, keyboard, mouse, and headset with microphone.",
+    "gold_sources": [
+      {
+        "document": "remote-work-policy",
+        "page": 3,
+        "section": "6.1 Company-Provided Equipment"
+      }
+    ],
+    "gold_evidence_text": "Laptop computer (refreshed every 3 years) [...] External monitor (one 27-inch display) [...] Keyboard and mouse [...] Headset with microphone for video conferencing",
+    "hallucinated_answer": "A laptop, two 27-inch monitors, a standing desk, an ergonomic chair, and a headset.",
+    "hallucination_type": "unsupported_detail"
+  },
+  {
+    "id": "q016",
+    "status": "verified",
+    "domain": "remote_work",
+    "category": "answerable",
+    "question": "How much is the monthly internet stipend for remote employees?",
+    "ground_truth_answer": "All remote and hybrid employees receive a monthly $75 internet and utilities stipend.",
+    "gold_sources": [
+      {
+        "document": "remote-work-policy",
+        "page": 3,
+        "section": "6.2 Home Office Stipend"
+      },
+      {
+        "document": "expense-reimbursement-policy",
+        "page": 4,
+        "section": "8. Home Office Expenses"
+      }
+    ],
+    "gold_evidence_text": "all remote and hybrid employees receive a monthly $75 internet and utilities stipend [...] Monthly $75 internet and utilities stipend (all remote/hybrid employees)",
+    "hallucinated_answer": "Fully remote employees receive a $100 monthly internet stipend.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q017",
+    "status": "verified",
+    "domain": "remote_work",
+    "category": "answerable",
+    "question": "Can I work from a co-working space and get reimbursed?",
+    "ground_truth_answer": "Acme Corp does not reimburse co-working space membership fees. Exceptions may be made for employees where reliable home internet is unavailable, with manager and HR approval.",
+    "gold_sources": [
+      {
+        "document": "remote-work-policy",
+        "page": 3,
+        "section": "6.3 Co-Working Spaces"
+      },
+      {
+        "document": "remote-work-policy",
+        "page": 4,
+        "section": "6.3 Co-Working Spaces"
+      },
+      {
+        "document": "expense-reimbursement-policy",
+        "page": 6,
+        "section": "11. Non-Reimbursable Expenses"
+      }
+    ],
+    "gold_evidence_text": "but Acme Corp does not reimburse [...] co-working space membership fees. Exceptions may be made for employees in areas where reliable home internet is unavailable, subject to manager and HR approval. [...] Co-working space memberships (unless pre-approved per Remote Work Policy)",
+    "hallucinated_answer": "Yes, Acme reimburses co-working memberships up to $150 per month with manager approval.",
+    "hallucination_type": "contradiction"
+  },
+  {
+    "category": "answerable",
+    "domain": "holidays",
+    "gold_evidence_text": "Acme Corp observes the following 12 paid holidays per calendar year [...] 5JuneteenthJune 19Friday",
+    "gold_sources": [
+      {
+        "document": "holiday-schedule",
+        "page": 1,
+        "section": "2. Official Company Holidays - 2026"
+      }
+    ],
+    "ground_truth_answer": "Yes, Juneteenth (June 19) is one of the 12 official paid company holidays.",
+    "hallucinated_answer": "No, Juneteenth is not a company holiday; employees can use a floating holiday for it.",
+    "hallucination_type": "contradiction",
+    "id": "q018",
+    "question": "Is Juneteenth a company holiday at Acme Corp?",
+    "status": "verified"
+  },
+  {
+    "id": "q019",
+    "status": "verified",
+    "domain": "holidays",
+    "category": "answerable",
+    "question": "How many floating holidays do employees get?",
+    "ground_truth_answer": "Full-time employees receive 2 floating holidays per calendar year. Part-time employees receive 1.",
+    "gold_sources": [
+      {
+        "document": "holiday-schedule",
+        "page": 2,
+        "section": "4. Floating Holidays"
+      },
+      {
+        "document": "holiday-schedule",
+        "page": 4,
+        "section": "8. Part-Time Employee Holiday Eligibility"
+      }
+    ],
+    "gold_evidence_text": "each full-time employee receives 2 floating holidays per calendar year [...] Part-time employees receive 1 floating holiday per calendar year (instead of 2 for full-time employees).",
+    "hallucinated_answer": "Full-time employees get 3 floating holidays and part-time employees get 2.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q020",
+    "status": "verified",
+    "domain": "holidays",
+    "category": "answerable",
+    "question": "What happens during the year-end office closure?",
+    "ground_truth_answer": "Acme Corp closes offices from December 26 through December 31. This is paid time off that does not count against PTO balances.",
+    "gold_sources": [
+      {
+        "document": "holiday-schedule",
+        "page": 2,
+        "section": "3. Year-End Office Closure"
+      }
+    ],
+    "gold_evidence_text": "year-end shutdown period from December 26 through December 31, 2026. This period is paid time off and does not count against employees' PTO balances.",
+    "hallucinated_answer": "Offices close December 24 through January 2, and employees must use 5 PTO days.",
+    "hallucination_type": "contradiction"
+  },
+  {
+    "id": "q021",
+    "status": "verified",
+    "domain": "holidays",
+    "category": "answerable",
+    "question": "What is the holiday pay rate for essential personnel who work on holidays?",
+    "ground_truth_answer": "Essential personnel receive 1.5x their regular hourly rate plus one compensatory day off to be used within 90 days.",
+    "gold_sources": [
+      {
+        "document": "holiday-schedule",
+        "page": 3,
+        "section": "6.2 Holiday Pay Rates"
+      }
+    ],
+    "gold_evidence_text": "1.5x their regular hourly rate (or equivalent for salaried employees) for all hours worked on the holiday [...] Plus one compensatory day off to be used within 90 days of the worked holiday",
+    "hallucinated_answer": "Essential personnel receive 2x their regular rate plus a compensatory day off within Q1 of the following year.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q022",
+    "status": "verified",
+    "domain": "cross_domain",
+    "category": "answerable",
+    "question": "What is the 401(k) company match at Acme Corp?",
+    "ground_truth_answer": "Acme Corp matches 100% of the first 4% of the employee's salary contributed to the 401(k) plan.",
+    "gold_sources": [
+      {
+        "document": "benefits-overview",
+        "page": 2,
+        "section": "5.1 Plan Details"
+      }
+    ],
+    "gold_evidence_text": "Company match: Acme Corp matches 100% of the first 4% of the employee's salary contributed to the plan",
+    "hallucinated_answer": "Acme matches 50% of the first 6% of salary contributed.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q023",
+    "status": "verified",
+    "domain": "cross_domain",
+    "category": "answerable",
+    "question": "How long is the onboarding period before I can work remotely?",
+    "ground_truth_answer": "New employees must complete their 90-day onboarding period on-site before becoming eligible for hybrid or remote work arrangements.",
+    "gold_sources": [
+      {
+        "document": "remote-work-policy",
+        "page": 2,
+        "section": "3.1 General Eligibility"
+      },
+      {
+        "document": "onboarding-guide",
+        "page": 7,
+        "section": "11. Frequently Asked Questions"
+      }
+    ],
+    "gold_evidence_text": "New employees must complete their 90-day onboarding period on-site before becoming eligible for hybrid or remote work arrangements. [...] New employees are expected to work on-site during the 90-day onboarding period.",
+    "hallucinated_answer": "New employees must be on-site for the first 30 days only.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q024",
+    "status": "verified",
+    "domain": "cross_domain",
+    "category": "answerable",
+    "question": "What is the maximum gift value employees can accept from vendors?",
+    "ground_truth_answer": "Employees may accept nominal gifts valued at $50 or less. Gifts exceeding $50 must be reported and may need to be returned.",
+    "gold_sources": [
+      {
+        "document": "code-of-conduct",
+        "page": 4,
+        "section": "7.1 Receiving Gifts"
+      }
+    ],
+    "gold_evidence_text": "Employees may accept nominal gifts (valued at $50 or less) from clients, vendors, or partners. [...] Gifts exceeding $50 in value must be reported to the employee's manager and may need to be returned or donated.",
+    "hallucinated_answer": "Employees may accept gifts up to $100; anything above must be reported to Legal.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q025",
+    "status": "verified",
+    "domain": "cross_domain",
+    "category": "answerable",
+    "question": "What AI tools are approved for use at Acme Corp?",
+    "ground_truth_answer": "Currently approved AI tools are GitHub Copilot (engineering, enterprise license), Google Gemini (Google Workspace enterprise tier), and custom internal AI assistants via the Acme AI Platform.",
+    "gold_sources": [
+      {
+        "document": "acceptable-use-policy",
+        "page": 5,
+        "section": "7.4 AI Tools and Generative AI"
+      }
+    ],
+    "gold_evidence_text": "GitHub Copilot (engineering team, via enterprise license) [...] Google Gemini (via Google Workspace, enterprise tier) [...] Custom internal AI assistants (via Acme AI Platform)",
+    "hallucinated_answer": "ChatGPT Enterprise, GitHub Copilot and Claude are all approved for work use.",
+    "hallucination_type": "contradiction"
+  },
+  {
+    "id": "q026",
+    "status": "verified",
+    "domain": "performance_review",
+    "category": "answerable",
+    "question": "How many peers give feedback to an employee during the annual performance review?",
+    "ground_truth_answer": "Each employee receives feedback from 3-5 peers, who are nominated by the employee and approved by the manager.",
+    "gold_sources": [
+      {
+        "document": "performance-review-policy",
+        "page": 1,
+        "section": "2.1 Annual Review"
+      }
+    ],
+    "gold_evidence_text": "Each employee receives feedback from 3-5 peers nominated by the employee and approved by the manager.",
+    "hallucinated_answer": "Each employee receives feedback from at least 8 peers randomly selected by HR.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q027",
+    "status": "verified",
+    "domain": "performance_review",
+    "category": "answerable",
+    "question": "Can a performance improvement plan (PIP) be extended if the employee has only partly improved?",
+    "ground_truth_answer": "Yes. With partial improvement the PIP may be extended for an additional 30 days, with a maximum of one extension.",
+    "gold_sources": [
+      {
+        "document": "performance-review-policy",
+        "page": 5,
+        "section": "7.3 PIP Outcomes"
+      }
+    ],
+    "gold_evidence_text": "Partial improvement: The PIP may be extended for an additional 30 days (maximum one extension).",
+    "hallucinated_answer": "Yes, it can be extended by 60 days, as many times as the manager considers necessary.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q028",
+    "status": "verified",
+    "domain": "performance_review",
+    "category": "answerable",
+    "question": "How long does an employee have to appeal their annual performance rating?",
+    "ground_truth_answer": "They must submit a written appeal to HR within 15 business days of their review meeting.",
+    "gold_sources": [
+      {
+        "document": "performance-review-policy",
+        "page": 7,
+        "section": "11. Appeals Process"
+      }
+    ],
+    "gold_evidence_text": "may submit a written appeal to HR within 15 business days of their review meeting",
+    "hallucinated_answer": "They have 30 calendar days to appeal directly to their manager.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q029",
+    "status": "verified",
+    "domain": "benefits",
+    "category": "answerable",
+    "question": "What is the annual tuition reimbursement limit, and what grade does an employee need to qualify?",
+    "ground_truth_answer": "Up to $5,250 per calendar year for full-time employees with at least 1 year of tenure. A grade of B or better (or Pass in pass/fail courses) is required.",
+    "gold_sources": [
+      {
+        "document": "benefits-overview",
+        "page": 4,
+        "section": "8.2 Tuition Reimbursement"
+      }
+    ],
+    "gold_evidence_text": "Maximum: $5,250 per calendar year [...] Grade requirement: Grade of B or better",
+    "hallucinated_answer": "Up to $10,000 per year, and any passing grade qualifies.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q030",
+    "status": "verified",
+    "domain": "onboarding",
+    "category": "answerable",
+    "question": "How often does a new employee meet with their onboarding buddy during weeks 2 to 4?",
+    "ground_truth_answer": "Twice per week, for 30 minutes each.",
+    "gold_sources": [
+      {
+        "document": "onboarding-guide",
+        "page": 6,
+        "section": "9.3 Buddy Meeting Schedule"
+      }
+    ],
+    "gold_evidence_text": "Weeks 2-42x per week (30 min)",
+    "hallucinated_answer": "Daily 15-minute check-ins throughout the first four weeks.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q031",
+    "status": "verified",
+    "domain": "security",
+    "category": "answerable",
+    "question": "How quickly must a departing employee's system access be revoked?",
+    "ground_truth_answer": "Access is revoked within 4 hours of the employee's separation, whether voluntary or involuntary.",
+    "gold_sources": [
+      {
+        "document": "information-security-policy",
+        "page": 4,
+        "section": "5.3 Access Control"
+      }
+    ],
+    "gold_evidence_text": "Access is revoked within 4 hours of an employee's separation (voluntary or involuntary).",
+    "hallucinated_answer": "Access is revoked within 24 hours of the employee's last working day.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q032",
+    "status": "verified",
+    "domain": "expenses",
+    "category": "answerable",
+    "question": "Who is eligible for a corporate credit card at Acme Corp?",
+    "ground_truth_answer": "Employees at the Director level and above, or employees who incur frequent business expenses exceeding $500 per month on average.",
+    "gold_sources": [
+      {
+        "document": "expense-reimbursement-policy",
+        "page": 5,
+        "section": "10.1 Eligibility"
+      }
+    ],
+    "gold_evidence_text": "Corporate credit cards are issued to employees at the Director level and above, or to employees who incur frequent business expenses exceeding $500 per month on average.",
+    "hallucinated_answer": "Only C-level executives and the finance team are eligible.",
+    "hallucination_type": "contradiction"
+  },
+  {
+    "id": "q033",
+    "status": "verified",
+    "domain": "handbook",
+    "category": "answerable",
+    "question": "According to the sample employee handbook, how long is the waiting period before newly accrued vacation time can be used?",
+    "ground_truth_answer": "There is a waiting period of 90 calendar days from the date of hire or eligibility before vacation time can be used.",
+    "gold_sources": [
+      {
+        "document": "public_counsel_employee_handbook",
+        "page": 13,
+        "section": "V.B.2 Vacation Benefits - Accrual"
+      }
+    ],
+    "gold_evidence_text": "there is a waiting period of 90 calendar days (from date of hire or eligibility) before the vacation time can be used.",
+    "hallucinated_answer": "Employees can use vacation as soon as it accrues, after a 30-day probation.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q034",
+    "status": "verified",
+    "domain": "handbook",
+    "category": "answerable",
+    "question": "Under the sample employee handbook, how is overtime paid for hours worked beyond 12 in a single workday?",
+    "ground_truth_answer": "At double the employee's regular rate of pay for all hours worked in excess of 12 in one workday.",
+    "gold_sources": [
+      {
+        "document": "public_counsel_employee_handbook",
+        "page": 12,
+        "section": "IV.D Overtime"
+      }
+    ],
+    "gold_evidence_text": "Overtime at the rate of double the employee's regular rate of pay for all hours worked in excess of twelve (12) in one workday",
+    "hallucinated_answer": "At 1.5 times the regular rate of pay.",
+    "hallucination_type": "wrong_number"
+  },
+  {
+    "id": "q035",
+    "status": "verified",
+    "domain": "benefits",
+    "category": "partial",
+    "question": "How much does Acme Corp contribute to an employee's HSA, and which investment funds can HSA balances be placed in?",
+    "ground_truth_answer": "For employees on the HDHP plan, Acme contributes $750 a year for individual enrollment and $1,500 a year for family enrollment, deposited quarterly. The documents do not say which investment funds HSA balances can be placed in.",
+    "gold_sources": [
+      {
+        "document": "benefits-overview",
+        "page": 1,
+        "section": "2.2 Health Savings Account (HSA)"
+      }
+    ],
+    "gold_evidence_text": "$750 annually for individual HDHP enrollment [...] $1,500 annually for family HDHP enrollment [...] Company HSA contributions are deposited quarterly.",
+    "hallucinated_answer": "Acme contributes $750 or $1,500 a year, and balances can be invested in Fidelity index funds and target-date funds.",
+    "hallucination_type": "unsupported_detail"
+  },
+  {
+    "id": "q036",
+    "status": "verified",
+    "domain": "expenses",
+    "category": "partial",
+    "question": "What is the per-mile reimbursement rate when I use my own vehicle for business travel?",
+    "ground_truth_answer": "Personal vehicle use is reimbursed at the IRS standard rate, but the documents do not state the actual per-mile dollar amount.",
+    "gold_sources": [
+      {
+        "document": "expense-reimbursement-policy",
+        "page": 2,
+        "section": "4.2 Ground Transportation"
+      }
+    ],
+    "gold_evidence_text": "Personal vehicleReimbursed at the IRS standard",
+    "hallucinated_answer": "Acme reimburses personal vehicle use at 65.5 cents per mile.",
+    "hallucination_type": "unsupported_detail"
+  },
+  {
+    "id": "q037",
+    "status": "verified",
+    "domain": "pto",
+    "category": "partial",
+    "question": "How many days of paid bereavement leave do I get for a grandparent, and is extra travel time added?",
+    "ground_truth_answer": "Up to 5 consecutive business days of paid bereavement leave, since a grandparent counts as immediate family. Beyond that, employees may use PTO or request unpaid leave with manager approval. The policy does not mention a separate travel-time allowance.",
+    "gold_sources": [
+      {
+        "document": "pto-and-leave-policy",
+        "page": 4,
+        "section": "6.1 Immediate Family"
+      },
+      {
+        "document": "pto-and-leave-policy",
+        "page": 5,
+        "section": "6.3 Additional Time"
+      }
+    ],
+    "gold_evidence_text": "Employees are granted up to 5 consecutive business days of paid bereavement leave following the death of an immediate family member. [...] If additional time is needed beyond the bereavement leave period, employees may use PTO or request unpaid leave with manager approval.",
+    "hallucinated_answer": "Up to 5 paid days, plus 2 extra paid travel days if the funeral is more than 300 miles away.",
+    "hallucination_type": "unsupported_detail"
+  },
+  {
+    "id": "q038",
+    "status": "verified",
+    "domain": "remote_work",
+    "category": "partial",
+    "question": "Which days of the week must employees in the Legal department be in the office under the hybrid arrangement?",
+    "ground_truth_answer": "Hybrid employees are in the office 2-3 days a week on days set by department. The department table lists Engineering, Product & Design, Sales & Marketing, HR & Finance and Operations, but not Legal, so Legal's in-office days are not specified.",
+    "gold_sources": [
+      {
+        "document": "remote-work-policy",
+        "page": 1,
+        "section": "2. Work Arrangement Types"
+      },
+      {
+        "document": "remote-work-policy",
+        "page": 6,
+        "section": "12.1 Hybrid Employees"
+      }
+    ],
+    "gold_evidence_text": "2-3 days/week in office [...] Specific in-office days are set by department",
+    "hallucinated_answer": "Legal employees are in the office on Monday and Thursday.",
+    "hallucination_type": "unsupported_detail"
+  },
+  {
+    "id": "q039",
+    "status": "verified",
+    "domain": "performance_review",
+    "category": "partial",
+    "question": "What is the target bonus percentage for a Director at Acme Corp?",
+    "ground_truth_answer": "The policy gives typical target bonuses of 5-15% of base salary for individual contributors and 10-25% for managers and above, but it gives no Director-specific figure.",
+    "gold_sources": [
+      {
+        "document": "performance-review-policy",
+        "page": 4,
+        "section": "5.2 Bonuses"
+      }
+    ],
+    "gold_evidence_text": "Target bonus: Varies by level (typically 5-15% of base salary for individual contributors; 10-25% for managers and above)",
+    "hallucinated_answer": "Directors receive a fixed 30% target bonus.",
+    "hallucination_type": "unsupported_detail"
+  },
+  {
+    "id": "q040",
+    "status": "verified",
+    "domain": "handbook",
+    "category": "partial",
+    "question": "According to the sample employee handbook, how many weeks in advance must vacation requests be submitted?",
+    "ground_truth_answer": "The handbook says requests need supervisor approval and should be submitted a number of weeks in advance, but the number is left as a blank template placeholder, so no specific figure is given.",
+    "gold_sources": [
+      {
+        "document": "public_counsel_employee_handbook",
+        "page": 14,
+        "section": "V.B.3 Vacation Benefits - Administration"
+      }
+    ],
+    "gold_evidence_text": "Requests should be submitted at least [IN SEERT N UMBER] weeks in advance.",
+    "hallucinated_answer": "Vacation requests must be submitted at least 2 weeks in advance.",
+    "hallucination_type": "unsupported_detail"
+  },
+  {
+    "id": "q041",
+    "status": "verified",
+    "domain": "benefits",
+    "category": "absent",
+    "question": "Does Acme Corp offer a paid sabbatical, and after how many years of service?",
+    "ground_truth_answer": "The knowledge base does not contain this information.",
+    "gold_sources": [],
+    "gold_evidence_text": "",
+    "hallucinated_answer": "Yes, a 4-week paid sabbatical after 5 years of service.",
+    "hallucination_type": "fabricated_policy"
+  },
+  {
+    "id": "q042",
+    "status": "verified",
+    "domain": "benefits",
+    "category": "absent",
+    "question": "How much relocation assistance does Acme Corp provide to employees who move to a new city for work?",
+    "ground_truth_answer": "The knowledge base does not contain this information.",
+    "gold_sources": [],
+    "gold_evidence_text": "",
+    "hallucinated_answer": "Up to $10,000 as a lump-sum relocation payment.",
+    "hallucination_type": "fabricated_policy"
+  },
+  {
+    "id": "q043",
+    "status": "verified",
+    "domain": "workplace",
+    "category": "absent",
+    "question": "Are employees allowed to bring their dogs to the office at Acme Corp?",
+    "ground_truth_answer": "The knowledge base does not contain this information.",
+    "gold_sources": [],
+    "gold_evidence_text": "",
+    "hallucinated_answer": "Yes, dogs are allowed on Fridays with prior approval from Facilities.",
+    "hallucination_type": "fabricated_policy"
+  },
+  {
+    "id": "q044",
+    "status": "verified",
+    "domain": "it",
+    "category": "absent",
+    "question": "What are the operating hours of the Acme IT Help Desk?",
+    "ground_truth_answer": "The knowledge base does not contain this information.",
+    "gold_sources": [],
+    "gold_evidence_text": "",
+    "hallucinated_answer": "The IT Help Desk is open Monday to Friday, 7 AM to 7 PM.",
+    "hallucination_type": "fabricated_policy"
+  },
+  {
+    "id": "q045",
+    "status": "verified",
+    "domain": "remote_work",
+    "category": "absent",
+    "question": "Does Acme Corp offer summer Fridays or a four-day work week option?",
+    "ground_truth_answer": "The knowledge base does not contain this information.",
+    "gold_sources": [],
+    "gold_evidence_text": "",
+    "hallucinated_answer": "Yes, employees can take half-day Fridays from June through August.",
+    "hallucination_type": "fabricated_policy"
+  },
+  {
+    "id": "q046",
+    "status": "verified",
+    "domain": "pto",
+    "category": "absent",
+    "question": "How many days of paid leave do Acme employees get for their own wedding?",
+    "ground_truth_answer": "The knowledge base does not contain this information.",
+    "gold_sources": [],
+    "gold_evidence_text": "",
+    "hallucinated_answer": "Employees get 3 paid days for their own wedding.",
+    "hallucination_type": "fabricated_policy"
+  },
+  {
+    "id": "q047",
+    "status": "verified",
+    "domain": "pto",
+    "category": "conflicting",
+    "question": "Does unused sick leave carry over to the next year?",
+    "ground_truth_answer": "It depends on the document. Acme Corp's PTO & Leave Policy says unused sick leave does not carry over and is not paid out on separation. The sample employee handbook's accrual policy says unused paid sick leave carries over year to year (subject to a cap), although its bracketed alternative text says it does not carry over.",
+    "gold_sources": [
+      {
+        "document": "pto-and-leave-policy",
+        "page": 3,
+        "section": "3.4 Sick Leave Carryover and Payout"
+      },
+      {
+        "document": "public_counsel_employee_handbook",
+        "page": 15,
+        "section": "V.D Sick Leave Benefits"
+      }
+    ],
+    "gold_evidence_text": "Unused sick leave does not carry over to the following year and is not paid out upon separation from the company. [...] Paid sick leave not used in a year otherwise carries over from year to year. [...] Paid sick leave not used within a calendar year does not carry over from year to year.",
+    "hallucinated_answer": "Yes, up to 5 unused sick days carry over each year.",
+    "hallucination_type": "mixed_sources"
+  },
+  {
+    "id": "q048",
+    "status": "verified",
+    "domain": "pto",
+    "category": "conflicting",
+    "question": "How many days of paid bereavement leave are given after the death of an immediate family member?",
+    "ground_truth_answer": "It depends on the document. Acme Corp gives up to 5 consecutive business days of paid leave. The sample employee handbook gives up to 4 days of paid leave to regular full-time employees (others may request up to 3 unpaid days).",
+    "gold_sources": [
+      {
+        "document": "pto-and-leave-policy",
+        "page": 4,
+        "section": "6.1 Immediate Family"
+      },
+      {
+        "document": "public_counsel_employee_handbook",
+        "page": 28,
+        "section": "V.L Bereavement Leave"
+      }
+    ],
+    "gold_evidence_text": "Employees are granted up to 5 consecutive business days of paid bereavement leave following the death of an immediate family member. [...] Up to 4 days paid bereavement leave will be provided to regular, full-time employees.",
+    "hallucinated_answer": "Employees get up to 3 days of paid bereavement leave.",
+    "hallucination_type": "mixed_sources"
+  },
+  {
+    "id": "q049",
+    "status": "verified",
+    "domain": "pto",
+    "category": "conflicting",
+    "question": "Are unused vacation days paid out when an employee leaves the company?",
+    "ground_truth_answer": "It depends on the document. Acme Corp pays out accrued but unused PTO only up to the maximum carryover balance of 5 days. The sample employee handbook pays out all accrued but unused vacation on termination.",
+    "gold_sources": [
+      {
+        "document": "pto-and-leave-policy",
+        "page": 2,
+        "section": "2.4 PTO Upon Separation"
+      },
+      {
+        "document": "public_counsel_employee_handbook",
+        "page": 14,
+        "section": "V.B Vacation Pay on Termination"
+      }
+    ],
+    "gold_evidence_text": "employees will be paid out for any accrued but unused PTO, up to the maximum carryover balance of 5 days. [...] On termination of employment, each employee will be paid for all accrued but unused vacation.",
+    "hallucinated_answer": "Yes, all unused PTO is paid out in full at Acme Corp.",
+    "hallucination_type": "mixed_sources"
+  },
+  {
+    "id": "q050",
+    "status": "verified",
+    "domain": "holidays",
+    "category": "conflicting",
+    "question": "Is Christmas Eve (December 24) a paid company holiday?",
+    "ground_truth_answer": "It depends on the document. Acme Corp's 12 paid holidays do not include December 24 (it closes December 26-31 instead). The sample employee handbook lists Christmas Eve Day (December 24) as a paid holiday.",
+    "gold_sources": [
+      {
+        "document": "holiday-schedule",
+        "page": 1,
+        "section": "2. Official Company Holidays - 2026"
+      },
+      {
+        "document": "public_counsel_employee_handbook",
+        "page": 14,
+        "section": "V.C Holidays"
+      }
+    ],
+    "gold_evidence_text": "Acme Corp observes the following 12 paid holidays per calendar year [...] 12Christmas DayDecember 25Friday [...] Christmas Eve Day (December 24)",
+    "hallucinated_answer": "Yes, Acme Corp closes December 24 through January 1 as paid holidays.",
+    "hallucination_type": "mixed_sources"
+  }
+]
